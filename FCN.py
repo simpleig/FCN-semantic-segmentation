@@ -28,7 +28,7 @@ tf.flags.DEFINE_float("learning_rate","1e-4","learning rate for the optimizier")
 tf.flags.DEFINE_string("model_dir","Model_zoo/","path to vgg model mat")
 tf.flags.DEFINE_bool("debug","True","Debug model: True/False")
 tf.flags.DEFINE_string("mode","train","Mode: train/ valid")
-tf.flags.DEFINE_float("max_iters","1e+5","max training iterations of batches")
+tf.flags.DEFINE_integer("max_iters","1e+5","max training iterations of batches")
 tf.flags.DEFINE_integer("num_classes","151","mit_sceneparsing with (150+1) classes")
 tf.flags.DEFINE_integer("image_size","224","can be variable in deed")
 tf.flags.DEFINE_string("model_weights","http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat","pretrained weights of the CNN in use")
@@ -336,7 +336,8 @@ valid_reader = dataset.BatchDatset(valid_records,reader_options)
 if not os.path.exists(FLAGS.full_model):
     os.makedirs(FLAGS.full_model)
 
-# start training/ testing
+# start training/ validation
+print("\nStarting training/ validation...\n")
 if FLAGS.mode == 'train':
     for itr in xrange(FLAGS.max_iters):
         # read next batch
