@@ -87,6 +87,7 @@ with tf.variable_scope("semantic_seg"):
             # matconvnet weights: (width, height, in_channels, out_channels)
             # tensorflow weights: (height, width, in_channels, out_channels)
             weights, biases = weights_biases[i][0][0][0][0]
+
             weights = np.transpose(weights,(1,0,2,3)) 
             biases = np.squeeze(biases)
             
@@ -110,7 +111,7 @@ with tf.variable_scope("semantic_seg"):
                 current = tf.nn.avg_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
         net[name] = current
              
-    net['pool5'] = tf.nn.max_pool(net['relu5_4'],ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
+    net['pool5'] = tf.nn.max_pool(net['conv5_3'],ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
 
      # fcn6
     init = tf.truncated_normal(shape=[7,7,512,4096],stddev=0.02)
