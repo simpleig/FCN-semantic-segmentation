@@ -290,7 +290,7 @@ if not os.path.exists(pickle_file):
         print("Error: source_datadir not found!!!")
         exit()
     else:
-        data_types = ['train','valid']
+        data_types = ['training','validation']
         data_list = {}
         for data_type in data_types:
             image_list = []
@@ -321,8 +321,8 @@ if not os.path.exists(pickle_file):
 # load data_records from *.pickle
 with open(pickle_file,'rb') as f:
     pickle_records = pickle.load(f)
-    train_records = pickle_records['train']
-    valid_records = pickle_records['valid']
+    train_records = pickle_records['training']
+    valid_records = pickle_records['validation']
     del pickle_records
     
 # initialize the data reader
