@@ -297,6 +297,7 @@ if not os.path.exists(pickle_file):
             data_list[data_type] = []
             # find all images
             image_names = os.path.join(source_datadir,"images",data_type,'*.jpg')
+            print("\nimage_names: %s\n"%(image_names))
             image_list.extend(glob.glob(image_names))
             if not image_list:
                 print("Error: no images found for "+data_type+"!!!")
