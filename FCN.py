@@ -288,7 +288,7 @@ if not os.path.exists(pickle_file):
     source_datadir =  zip_file.split('.')[0]
     if not os.path.exists(source_datadir):
         print("Error: source_datadir not found!!!")
-        exit
+        exit()
     else:
         data_types = ['train','valid']
         data_list = {}
@@ -300,7 +300,7 @@ if not os.path.exists(pickle_file):
             image_list.extend(glob.glob(image_names))
             if not image_list:
                 print("Error: no images found for "+data_type+"!!!")
-                exit
+                exit()
             else:
                 # find corresponding annotations
                 for i in image_list:
@@ -315,7 +315,7 @@ if not os.path.exists(pickle_file):
             print("Number of %s tuples: %d"%(data_type,len(data_list[data_type])))
     print("Packing data into "+pickle_file+" ...")
     with open(pickle_file,'wb') as f:
-        hickle.dump(data_list,f,pickle.HIGHEST_PROTOCOL)
+        pickle.dump(data_list,f,pickle.HIGHEST_PROTOCOL)
     print("pickle finished!!!")
 # load data_records from *.pickle
 with open(pickle_file,'rb') as f:
