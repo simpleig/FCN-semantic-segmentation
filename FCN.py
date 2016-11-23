@@ -327,7 +327,7 @@ with open(pickle_file,'rb') as f:
     
 # initialize the data reader
 print("Initializing the data reader...")
-reader_optiions = {'resize':True,'resize_size':FLAGS.image_size}
+reader_options = {'resize':True,'resize_size':FLAGS.image_size}
 if FLAGS.mode == 'train':
     train_reader = dataset.BatchDatset(train_records,reader_options)
 valid_reader = dataset.BatchDatset(valid_records,reader_options)
