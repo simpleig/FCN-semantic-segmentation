@@ -78,7 +78,7 @@ with tf.variable_scope("semantic_seg"):
         'conv2_1','relu2_1','conv2_2','relu2_2','pool2',
         'conv3_1','relu3_1','conv3_2','relu3_2','conv3_3','relu3_3','conv3_4','relu3_4','pool3',
         'conv4_1','relu4_1','conv4_2','relu4_2','conv4_3','relu4_3','conv4_4','relu4_4','pool4',
-        'conv5_1','relu5_1','conv5_2','relu5_2','conv5_3','pool5'
+        'conv5_1','relu5_1','conv5_2','relu5_2','conv5_3','relu5_3','conv5_4','relu5_4','pool5'
     ]
     current = processed_image
     for i,name in enumerate(layers):
@@ -107,7 +107,7 @@ with tf.variable_scope("semantic_seg"):
             if name == 'pool5':
                 current = tf.nn.max_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
             else:
-                current = tf.nn.avg_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
+                current = tf.nn.max_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
         net[name] = current
                 
      # fcn6
