@@ -6,6 +6,7 @@ import glob
 import random
 import BatchDatsetReader as dataset
 import scipy.misc as misc
+from six.moves import cPickle as pickle
 
 # reset the graph
 tf.reset_default_graph()
@@ -314,7 +315,7 @@ if not os.path.exists(pickle_file):
             print("Number of %s tuples: %d"%(data_type,len(data_list[data_type])))
     print("Packing data into "+pickle_file+" ...")
     with open(pickle_file,'wb') as f:
-        pickle.dump(data_list,f,pickle.HIGHEST_PROTOCOL)
+        hickle.dump(data_list,f,pickle.HIGHEST_PROTOCOL)
     print("pickle finished!!!")
 # load data_records from *.pickle
 with open(pickle_file,'rb') as f:
