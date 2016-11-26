@@ -354,8 +354,8 @@ with open(pickle_file,'rb') as f:
 print("Initializing the data reader...")
 reader_options = {'resize':True,'resize_size':FLAGS.image_size}
 if FLAGS.mode == 'train':
-    train_reader = dataset.BatchDatset(train_records,reader_options)
-valid_reader = dataset.BatchDatset(valid_records,reader_options)
+    train_reader = dataset.BatchDatset(train_records[:10],reader_options)
+valid_reader = dataset.BatchDatset(valid_records[:10],reader_options)
 
 # check if FLAGS.full_model exist
 if not os.path.exists(FLAGS.full_model):
