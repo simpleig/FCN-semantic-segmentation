@@ -133,7 +133,7 @@ with tf.variable_scope("semantic_seg"):
     init = tf.constant(0.0,shape=[4096])
     fcn6_b = tf.get_variable(initializer=init,name="fcn6_b")
 
-    fcn6 = tf.nn.conv2d(current,fcn6_w,strides=[1,1,1,1],padding="SAME")
+    fcn6 = tf.nn.conv2d(net['pool5'],fcn6_w,strides=[1,1,1,1],padding="SAME")
     fcn6 = tf.nn.bias_add(fcn6,fcn6_b,name="fcn6")
 
     relu6 = tf.nn.relu(fcn6,name="relu6")
@@ -178,8 +178,8 @@ with tf.variable_scope("semantic_seg"):
     s = 2
     k = 2*s
     in_channel = FLAGS.num_classes
-    out_channel = net['pool3'].get_shape()[3].value
-    out_shape = tf.shape(net['pool3'])
+    out_channel = net['pool4'].get_shape()[3].value
+    out_shape = tf.shape(net['pool4'])
 
     init = tf.truncated_normal(shape=[k,k,out_channel,in_channel],stddev=0.02)
     deconv1_w = tf.get_variable(initializer=init,name="deconv1_w")
@@ -188,12 +188,12 @@ with tf.variable_scope("semantic_seg"):
     deconv1_b = tf.get_variable(initializer=init,name="deconv1_b")
 
     # sanity check
-    print("deconv1 output_shape: {}".format(net['pool3'].get_shape()))
+    print("deconv1 output_shape: {}".format(net['pool4'].get_shape()))
 
     deconv1 = tf.nn.conv2d_transpose(fcn8, deconv1_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv1 = tf.nn.bias_add(deconv1, deconv1_b, data_format=None, name="deconv1")
 
-    fuse1 = tf.add(deconv1, net['pool3'], name="fuse1")
+    fuse1 = tf.add(deconv1, net['pool4'], name="fuse1")
     
     # deconv2 + net['pool3']: x16 -> x8
     s = 2
