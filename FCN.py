@@ -81,6 +81,10 @@ with tf.variable_scope("semantic_seg"):
         'conv5_1','relu5_1','conv5_2','relu5_2','conv5_3' #,'relu5_3','conv5_4','relu5_4','pool5'
     ]
     current = processed_image
+
+    # sanity check
+    print("processed_image: {}".format(processed_image.get_shape()))
+
     for i,name in enumerate(layers):
         type = name[:4]
         if type == 'conv':
@@ -99,20 +103,29 @@ with tf.variable_scope("semantic_seg"):
             
             current = tf.nn.conv2d(current,weights,strides=[1,1,1,1],padding="SAME")
             current = tf.nn.bias_add(current,biases,name=name)
+
+            # sanity check
+            print("{}: {}".format(name,current.get_shape()))
         elif type == 'relu':
             current = tf.nn.relu(current,name=name)
             if FLAGS.debug:
                 tf.histogram_summary(current.op.name+"/activation",current)
                 tf.scalar_summary(current.op.name+"/sparsity",tf.nn.zero_fraction(current))
+            # sanity check
+            print("{}: {}".format(name,current.get_shape()))        
         elif type == 'pool':
             if name == 'pool5':
                 current = tf.nn.max_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
             else:
                 current = tf.nn.avg_pool(current,ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
+            # sanity check
+            print("{}: {}".format(name,current.get_shape()))
         net[name] = current
              
     net['pool5'] = tf.nn.max_pool(net['conv5_3'],ksize=[1,2,2,1],strides=[1,2,2,1],padding="SAME",name=name)
-
+    # sanity check
+    print("pool5: {}".format(net['pool5'].get_shape()))
+    
      # fcn6
     init = tf.truncated_normal(shape=[7,7,512,4096],stddev=0.02)
     fcn6_w = tf.get_variable(initializer=init,name="fcn6_w")
@@ -128,6 +141,8 @@ with tf.variable_scope("semantic_seg"):
         tf.histogram_summary("relu6/activation", relu6, collections=None, name=None)
         tf.scalar_summary("relu6/sparsity", tf.nn.zero_fraction(relu6), collections=None, name=None)
     dropout6 = tf.nn.dropout(relu6, keep_prob=dropout_prob, noise_shape=None, seed=None, name="dropout6")
+    # sanity check
+    print("dropout6: {}".format(dropout6.get_shape()))
 
      # fcn7
     init = tf.truncated_normal(shape=[1,1,4096,4096],stddev=0.02)
@@ -144,6 +159,8 @@ with tf.variable_scope("semantic_seg"):
         tf.histogram_summary("relu7/activation", relu7, collections=None, name=None)
         tf.scalar_summary("relu7/sparsity", tf.nn.zero_fraction(relu7), collections=None, name=None)
     dropout7 = tf.nn.dropout(relu7, keep_prob=dropout_prob, noise_shape=None, seed=None, name="dropout7")
+    # sanity check
+    print("dropout7: {}".format(dropout7.get_shape()))
 
     # fcn8
     init = tf.truncated_normal(shape=[1,1,4096,FLAGS.num_classes],stddev=0.02)
@@ -154,6 +171,8 @@ with tf.variable_scope("semantic_seg"):
 
     fcn8 = tf.nn.conv2d(dropout7, fcn8_w, strides=[1,1,1,1], padding="SAME", use_cudnn_on_gpu=None, data_format=None, name=None)
     fcn8 = tf.nn.bias_add(fcn8, fcn8_b, data_format=None, name="fcn8")
+    # sanity check
+    print("fcn8: {}".format(fcn8.get_shape()))
 
     # deconv1 + net['pool4']: x32 -> x16
     s = 2
@@ -167,6 +186,9 @@ with tf.variable_scope("semantic_seg"):
 
     init = tf.constant(0.0,shape=[out_channel])
     deconv1_b = tf.get_variable(initializer=init,name="deconv1_b")
+
+    # sanity check
+    print("deconv1 output_shape: {}".format(out_shape.get_shape()))
 
     deconv1 = tf.nn.conv2d_transpose(fcn8, deconv1_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv1 = tf.nn.bias_add(deconv1, deconv1_b, data_format=None, name="deconv1")
