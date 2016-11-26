@@ -188,7 +188,7 @@ with tf.variable_scope("semantic_seg"):
     deconv1_b = tf.get_variable(initializer=init,name="deconv1_b")
 
     # sanity check
-    print("deconv1 output_shape: {}".format(out_shape.get_shape()))
+    print("deconv1 output_shape: {}".format(out_shape))
 
     deconv1 = tf.nn.conv2d_transpose(fcn8, deconv1_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv1 = tf.nn.bias_add(deconv1, deconv1_b, data_format=None, name="deconv1")
