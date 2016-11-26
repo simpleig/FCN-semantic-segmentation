@@ -53,7 +53,7 @@ else:
 print("\nloading pretrained weights from: "+weights_file)
 pretrain_weights = scipy.io.loadmat(weights_file)
 print("loading finished!\n")
-    
+
 # the mean RGB
 mean = pretrain_weights['normalization'][0][0][0] # shape(224,224,3)
 mean_pixel = np.mean(mean,axis=(0,1)) # average on (height,width) to compute the mean RGB   
@@ -63,8 +63,8 @@ weights_biases = np.squeeze(pretrain_weights['layers'])
 
 # network input data
 dropout_prob = tf.placeholder(tf.float32,name="dropout_probability")
-images = tf.placeholder(tf.float32,shape=[None,None,None,3],name="input_images")
-annotations = tf.placeholder(tf.uint8,shape=[None,None,None,1],name="input_annotations")
+images = tf.placeholder(tf.float32,shape=[None,FLAGS.image_size,FLAGS.image_size,3],name="input_images")
+annotations = tf.placeholder(tf.uint8,shape=[None,FLAGS.image_size,FLAGS.image_size,1],name="input_annotations")
 
 # subtract the mean image
 processed_image = images - mean_pixel
