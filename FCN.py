@@ -193,8 +193,8 @@ with tf.variable_scope("semantic_seg"):
     deconv1 = tf.nn.conv2d_transpose(fcn8, deconv1_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv1 = tf.nn.bias_add(deconv1, deconv1_b, data_format=None, name="deconv1")
 
-    fuse1 = tf.add(deconv1, net['pool4'], name="fuse1")
-            
+    fuse1 = tf.add(deconv1, net['pool3'], name="fuse1")
+    
     # deconv2 + net['pool3']: x16 -> x8
     s = 2
     k = 2*s
