@@ -239,7 +239,7 @@ tf.image_summary("annotations", tf.cast(annotations,tf.uint8), max_images=2, col
 tf.image_summary("annotations_pred", tf.cast(annotations_pred,tf.uint8), max_images=2, collections=None, name=None)
 
 # construct the loss
-loss = tf.nn.softmax_cross_entropy_with_logits(deconv3, tf.squeeze(annotation, squeeze_dims=[3]))
+loss = tf.nn.softmax_cross_entropy_with_logits(deconv3, tf.squeeze(annotations, squeeze_dims=[3]))
 loss = tf.reduce_mean(loss, reduction_indices=None, keep_dims=False, name="pixel-wise_cross-entropy_loss")
 
 # log the loss
