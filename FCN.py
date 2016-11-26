@@ -64,7 +64,7 @@ weights_biases = np.squeeze(pretrain_weights['layers'])
 # network input data
 dropout_prob = tf.placeholder(tf.float32,name="dropout_probability")
 images = tf.placeholder(tf.float32,shape=[None,FLAGS.image_size,FLAGS.image_size,3],name="input_images")
-annotations = tf.placeholder(tf.uint8,shape=[None,FLAGS.image_size,FLAGS.image_size,1],name="input_annotations")
+annotations = tf.placeholder(tf.int32,shape=[None,FLAGS.image_size,FLAGS.image_size,1],name="input_annotations")
 
 # subtract the mean image
 processed_image = images - mean_pixel
@@ -239,7 +239,7 @@ tf.image_summary("annotations", tf.cast(annotations,tf.uint8), max_images=2, col
 tf.image_summary("annotations_pred", tf.cast(annotations_pred,tf.uint8), max_images=2, collections=None, name=None)
 
 # construct the loss
-loss = tf.nn.softmax_cross_entropy_with_logits(deconv3, tf.squeeze(annotations, squeeze_dims=[3]))
+loss = tf.nn.sparse_softmax_cross_entropy_with_logits(deconv3, tf.squeeze(annotations, squeeze_dims=[3]))
 loss = tf.reduce_mean(loss, reduction_indices=None, keep_dims=False, name="pixel-wise_cross-entropy_loss")
 
 # log the loss
