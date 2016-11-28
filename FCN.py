@@ -391,7 +391,7 @@ if FLAGS.mode == 'train':
 elif FLAGS.mode == 'valid':
     # quantitative results
     valid_images,valid_annotations=valid_reader.get_records()
-    feed_dict = {images:valid_images,annotations:valid_annotations,dropout_prob:1.0}
+    feed_dict = {images:valid_images[:20],annotations:valid_annotations[:20],dropout_prob:1.0}
     valid_loss,valid_summary = sess.run([loss,summary_op],feed_dict=feed_dict)
     valid_writer.add_summary(valid_summary,FLAGS.max_iters)
     print("==============================")
