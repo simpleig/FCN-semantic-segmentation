@@ -406,8 +406,8 @@ elif FLAGS.mode == 'valid':
     annotations_pred_results = np.squeeze(annotations_pred_results,axis=3)
     
     for n in xrange(FLAGS.batch_size):
-        print("Saving %d valid tuples for qualitative comparisons...")
+        print("Saving %d-th valid tuples for qualitative comparisons..."%(n))
         misc.imsave(FLAGS.logs_dir+"/complete_valid/"+str(n)+"_image.png",valid_images[n].astype(np.uint8))
         misc.imsave(FLAGS.logs_dir+"/complete_valid/"+str(n)+"_annotation.png",valid_annotations[n].astype(np.uint8))
         misc.imsave(FLAGS.logs_dir+"/complete_valid/"+str(n)+"_prediction.png",annotations_pred_results[n].astype(np.uint8))
-        print("saving finished!!!")
+    print("saving finished!!!")
