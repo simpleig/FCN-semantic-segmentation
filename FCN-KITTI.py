@@ -339,7 +339,7 @@ if FLAGS.mode == 'train':
             print("==============================")
         # save snapshot
         if itr % 500 == 0:
-            snapshot_name = os.path.join(FLAGS.full_model,str(itr)+"_model.ckpt")
+            snapshot_name = os.path.join(os.path.join(FLAGS.full_model,FLAGS.name),str(itr)+"_model.ckpt")
             saver.save(sess,snapshot_name)
 elif FLAGS.mode == 'valid':
     # quantitative results
