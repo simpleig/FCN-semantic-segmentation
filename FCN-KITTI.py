@@ -28,7 +28,7 @@ tf.flags.DEFINE_string("model_dir","Model_zoo/","path to vgg model mat")
 tf.flags.DEFINE_bool("debug","True","Debug model: True/False")
 tf.flags.DEFINE_string("mode","train","Mode: train/ valid")
 tf.flags.DEFINE_integer("max_iters","100001","max training iterations of batches")
-tf.flags.DEFINE_integer("num_classes","11","mit_sceneparsing with (150+1) classes")
+tf.flags.DEFINE_integer("num_classes","11","KITTI with (10+1) classes")
 tf.flags.DEFINE_string("model_weights","http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat","pretrained weights of the CNN in use")
 tf.flags.DEFINE_string("full_model","full_model/","trained parameters of the whole network")
 tf.flags.DEFINE_string("full_model_file","100000_model.ckpt","pretrained parameters of the whole network")
@@ -163,10 +163,10 @@ with tf.variable_scope("semantic_seg"):
 
     # fcn8
     init = tf.truncated_normal(shape=[1,1,4096,FLAGS.num_classes],stddev=0.02)
-    fcn8_w = tf.get_variable(initializer=init,name="fcn8_w")
+    fcn8_w = tf.get_variable(initializer=init,name="fcn8_w_new")
 
     init = tf.constant(0.0,shape=[FLAGS.num_classes])
-    fcn8_b = tf.get_variable(initializer=init,name="fcn8_b")
+    fcn8_b = tf.get_variable(initializer=init,name="fcn8_b_new")
 
     fcn8 = tf.nn.conv2d(dropout7, fcn8_w, strides=[1,1,1,1], padding="SAME", use_cudnn_on_gpu=None, data_format=None, name=None)
     fcn8 = tf.nn.bias_add(fcn8, fcn8_b, data_format=None, name="fcn8")
@@ -181,10 +181,10 @@ with tf.variable_scope("semantic_seg"):
     out_shape = tf.shape(net['pool4'])
 
     init = tf.truncated_normal(shape=[k,k,out_channel,in_channel],stddev=0.02)
-    deconv1_w = tf.get_variable(initializer=init,name="deconv1_w")
+    deconv1_w = tf.get_variable(initializer=init,name="deconv1_w_new")
 
     init = tf.constant(0.0,shape=[out_channel])
-    deconv1_b = tf.get_variable(initializer=init,name="deconv1_b")
+    deconv1_b = tf.get_variable(initializer=init,name="deconv1_b_new")
 
     # sanity check
     print("deconv1 output_shape: {}".format(net['pool4'].get_shape()))
@@ -220,10 +220,10 @@ with tf.variable_scope("semantic_seg"):
     out_shape = tf.pack([tf.shape(processed_image)[0],tf.shape(processed_image)[1],tf.shape(processed_image)[2],out_channel])
             
     init = tf.truncated_normal(shape=[k,k,out_channel,in_channel],stddev=0.02)
-    deconv3_w = tf.get_variable(initializer=init,name="deconv3_w")
+    deconv3_w = tf.get_variable(initializer=init,name="deconv3_w_new")
 
     init = tf.constant(0.0,shape=[out_channel])
-    deconv3_b = tf.get_variable(initializer=init,name="deconv3_b")
+    deconv3_b = tf.get_variable(initializer=init,name="deconv3_b_new")
 
     deconv3 = tf.nn.conv2d_transpose(fuse2, deconv3_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv3 = tf.nn.bias_add(deconv3, deconv3_b, data_format=None, name="deconv3")
