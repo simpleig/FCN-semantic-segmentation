@@ -270,7 +270,7 @@ print("\nSetting up the Saver ...\n")
 saver = tf.train.Saver()
 if FLAGS.load:
     print("\nLoading pretrain parameters of the whole network ...\n")
-    saver.restore(sess, FLAGS.full_model_file)
+    saver.restore(sess, os.path.join(FLAGS.full_model,FLAGS.full_model_file))
     
 # set the summary writer
 print("\nSetting the summary writers ...\n")
