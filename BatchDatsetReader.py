@@ -46,6 +46,13 @@ class BatchDatset:
         print (self.different_images[0].shape)
         print (self.different_annotations[0].shape)
 
+        # Shuffle the data
+        perm = np.arange(len(self.different_images))
+        np.random.shuffle(perm)
+        print(perm)
+        self.different_images = self.different_images[perm]
+        self.different_annotations = self.different_annotations[perm]
+
     def next_image(self,batch_size=1):
         start = self.batch_offset
         self.batch_offset += batch_size
