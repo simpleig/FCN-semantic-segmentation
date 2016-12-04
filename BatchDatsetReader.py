@@ -53,7 +53,7 @@ class BatchDatset:
 
         # Shuffle the data
         self.different_images_buffer = self.different_images
-        self.different_annotations_buffer = self.different_annotations_buffer
+        self.different_annotations_buffer = self.different_annotations
         self.different_images = []
         self.different_annotations = []
         perm = np.arange(len(self.different_images_buffer))
