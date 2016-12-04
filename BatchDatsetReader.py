@@ -40,7 +40,7 @@ class BatchDatset:
     def _read_different_images(self):
         # read all images into a list
         self.different_images = [np.array(misc.imread(filename['image'])) for filename in self.files]
-        self.different_annotations = [np.array(misc.imread(filename['annotation'])) for filename in self.files]
+        self.different_annotations = [np.expand_dims(np.array(misc.imread(filename['annotation'])),axis=3) for filename in self.files]
 
         # sanity check
         print (self.different_images[0].shape)
