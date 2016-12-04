@@ -8,9 +8,14 @@ import scipy.misc as misc
 class BatchDatset:
     files = []
     images = []
-    different_images = []
     annotations = []
+
+    different_images = []
     different_annotations = []
+
+    different_images_buffer = []
+    different_annotations_buffer = []
+
     image_options = {}
     batch_offset = 0
     epochs_completed = 0
@@ -47,11 +52,14 @@ class BatchDatset:
         print (self.different_annotations[0].shape)
 
         # Shuffle the data
-        perm = np.arange(len(self.different_images))
+        self.different_images_buffer = self.different_images
+        self.different_annotations_buffer = self.different_annotations_buffer
+        self.different_images = []
+        self.different_annotations = []
+        perm = np.arange(len(self.different_images_buffer))
         np.random.shuffle(perm)
-        print(perm)
-        self.different_images = self.different_images[perm]
-        self.different_annotations = self.different_annotations[perm]
+        self.different_images = [self.different_images_buffer[perm] for idx in perm]
+        self.different_annotations = [self.different_annotations_buffer[perm] for idx in perm]
 
     def next_image(self,batch_size=1):
         start = self.batch_offset
