@@ -25,7 +25,7 @@ class BatchDatset:
         different_size = True/False
         color=True/False
         """
-        print("Initializing Batch Dataset Reader...")
+        print("[Modified version] Initializing Batch Dataset Reader...")
         print(image_options)
         self.files = records_list
         self.image_options = image_options
