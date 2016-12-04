@@ -22,13 +22,46 @@ class BatchDatset:
         Available options:
         resize = True/ False
         resize_size = #size of output image - does bilinear resize
+        different_size = True/False
         color=True/False
         """
         print("Initializing Batch Dataset Reader...")
         print(image_options)
         self.files = records_list
         self.image_options = image_options
-        self._read_images()
+
+        if self.image_options.get("different_size", False):
+            self._read_images()
+        else
+            self._read_different_images()
+
+    def _read_different_images(self):
+        # read all images into a list
+        self.different_images = [np.array(misc.imread(filename['image'])) for filename in self.files]
+        self.different_annotations = [np.array(misc.imread(filename['annotation'])) for filename in self.files]
+
+        # sanity check
+        print (self.different_images[0].shape)
+        print (self.different_annotations[0].shape)
+
+    def next_image(self,batch_size=1):
+        start = self.batch_offset
+        self.batch_offset += batch_size
+        if self.batch_offset > len(self.different_images):
+            # Finished epoch
+            self.epochs_completed += 1
+            print("****************** Epochs completed: " + str(self.epochs_completed) + "******************")
+            # Shuffle the data
+            perm = np.arange(len(self.different_images))
+            np.random.shuffle(perm)
+            self.different_images = self.different_images[perm]
+            self.different_annotations = self.different_annotations[perm]
+            # Start next epoch
+            start = 0
+            self.batch_offset = batch_size
+
+        end = self.batch_offset
+        return self.images[start:end], self.annotations[start:end]        
 
     def _read_images(self):
         self.__channels = True
