@@ -32,7 +32,7 @@ class BatchDatset:
 
         if self.image_options.get("different_size", False):
             self._read_images()
-        else
+        else:
             self._read_different_images()
 
     def _read_different_images(self):
