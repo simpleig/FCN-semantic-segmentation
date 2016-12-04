@@ -1,3 +1,5 @@
+# fine-tuning on KITTI
+
 import tensorflow as tf
 import numpy as np
 import os
@@ -28,7 +30,7 @@ tf.flags.DEFINE_string("model_dir","Model_zoo/","path to vgg model mat")
 tf.flags.DEFINE_bool("debug","True","Debug model: True/False")
 tf.flags.DEFINE_string("mode","train","Mode: train/ valid")
 tf.flags.DEFINE_integer("max_iters","100001","max training iterations of batches")
-tf.flags.DEFINE_integer("num_classes","11","KITTI with (10+1) classes")
+tf.flags.DEFINE_integer("num_classes","11","mit_sceneparsing with (150+1) classes")
 tf.flags.DEFINE_string("model_weights","http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat","pretrained weights of the CNN in use")
 tf.flags.DEFINE_string("full_model","full_model/","trained parameters of the whole network")
 tf.flags.DEFINE_string("full_model_file","100000_model.ckpt","pretrained parameters of the whole network")
@@ -163,10 +165,10 @@ with tf.variable_scope("semantic_seg"):
 
     # fcn8
     init = tf.truncated_normal(shape=[1,1,4096,FLAGS.num_classes],stddev=0.02)
-    fcn8_w = tf.get_variable(initializer=init,name="fcn8_w_new")
+    fcn8_w = tf.get_variable(initializer=init,name="fcn8_w")
 
     init = tf.constant(0.0,shape=[FLAGS.num_classes])
-    fcn8_b = tf.get_variable(initializer=init,name="fcn8_b_new")
+    fcn8_b = tf.get_variable(initializer=init,name="fcn8_b")
 
     fcn8 = tf.nn.conv2d(dropout7, fcn8_w, strides=[1,1,1,1], padding="SAME", use_cudnn_on_gpu=None, data_format=None, name=None)
     fcn8 = tf.nn.bias_add(fcn8, fcn8_b, data_format=None, name="fcn8")
@@ -181,10 +183,10 @@ with tf.variable_scope("semantic_seg"):
     out_shape = tf.shape(net['pool4'])
 
     init = tf.truncated_normal(shape=[k,k,out_channel,in_channel],stddev=0.02)
-    deconv1_w = tf.get_variable(initializer=init,name="deconv1_w_new")
+    deconv1_w = tf.get_variable(initializer=init,name="deconv1_w")
 
     init = tf.constant(0.0,shape=[out_channel])
-    deconv1_b = tf.get_variable(initializer=init,name="deconv1_b_new")
+    deconv1_b = tf.get_variable(initializer=init,name="deconv1_b")
 
     # sanity check
     print("deconv1 output_shape: {}".format(net['pool4'].get_shape()))
@@ -220,10 +222,10 @@ with tf.variable_scope("semantic_seg"):
     out_shape = tf.pack([tf.shape(processed_image)[0],tf.shape(processed_image)[1],tf.shape(processed_image)[2],out_channel])
             
     init = tf.truncated_normal(shape=[k,k,out_channel,in_channel],stddev=0.02)
-    deconv3_w = tf.get_variable(initializer=init,name="deconv3_w_new")
+    deconv3_w = tf.get_variable(initializer=init,name="deconv3_w")
 
     init = tf.constant(0.0,shape=[out_channel])
-    deconv3_b = tf.get_variable(initializer=init,name="deconv3_b_new")
+    deconv3_b = tf.get_variable(initializer=init,name="deconv3_b")
 
     deconv3 = tf.nn.conv2d_transpose(fuse2, deconv3_w, output_shape=out_shape, strides=[1,s,s,1], padding='SAME', name=None)
     deconv3 = tf.nn.bias_add(deconv3, deconv3_b, data_format=None, name="deconv3")
@@ -268,9 +270,17 @@ tf.initialize_all_variables().run()
 # set up the saver
 print("\nSetting up the Saver ...\n")
 saver = tf.train.Saver()
+all_vars = tf.trainable_variables()
+saver_KITTI = tf.train.Saver({"semantic_seg/conv1_1_w":all_vars[0],"semantic_seg/conv1_1_b":all_vars[1],"semantic_seg/conv1_2_w":all_vars[2],"semantic_seg/conv1_2_b":all_vars[3],
+                              "semantic_seg/conv2_1_w":all_vars[4],"semantic_seg/conv2_1_b":all_vars[5],"semantic_seg/conv2_2_w":all_vars[6],"semantic_seg/conv2_2_b":all_vars[7],
+                              "semantic_seg/conv3_1_w":all_vars[8],"semantic_seg/conv3_1_b":all_vars[9],"semantic_seg/conv3_2_w":all_vars[10],"semantic_seg/conv3_2_b":all_vars[11],"semantic_seg/conv3_3_w":all_vars[12],"semantic_seg/conv3_3_b":all_vars[13],"semantic_seg/conv3_4_w":all_vars[14],"semantic_seg/conv3_4_b":all_vars[15],
+                              "semantic_seg/conv4_1_w":all_vars[16],"semantic_seg/conv4_1_b":all_vars[17],"semantic_seg/conv4_2_w":all_vars[18],"semantic_seg/conv4_2_b":all_vars[19],"semantic_seg/conv4_3_w":all_vars[20],"semantic_seg/conv4_3_b":all_vars[21],"semantic_seg/conv4_4_w":all_vars[22],"semantic_seg/conv4_4_b":all_vars[23],
+                              "semantic_seg/conv5_1_w":all_vars[24],"semantic_seg/conv5_1_b":all_vars[25],"semantic_seg/conv5_2_w":all_vars[26],"semantic_seg/conv5_2_b":all_vars[27],"semantic_seg/conv5_3_w":all_vars[28],"semantic_seg/conv5_3_b":all_vars[29],
+                              "semantic_seg/fcn6_w":all_vars[30],"semantic_seg/fcn6_b":all_vars[31],"semantic_seg/fcn7_w":all_vars[32],"semantic_seg/fcn7_b":all_vars[33],
+                              "semantic_seg/deconv2_w":all_vars[38],"semantic_seg/deconv2_b":all_vars[39]})
 if FLAGS.load:
     print("\nLoading pretrain parameters of the whole network ...\n")
-    saver.restore(sess, os.path.join(FLAGS.full_model,FLAGS.full_model_file))
+    saver_KITTI.restore(sess, os.path.join(FLAGS.full_model,FLAGS.full_model_file))
     
 # set the summary writer
 print("\nSetting the summary writers ...\n")
@@ -305,7 +315,7 @@ with open(pickle_file,'rb') as f:
 
 # initialize the data reader
 print("Initializing the data reader...")
-reader_options = {'resize':True,'resize_size':FLAGS.image_size}
+reader_options = {'different_size':True}
 if FLAGS.mode == 'train':
     train_reader = dataset.BatchDatset(train_records,reader_options)
 valid_reader = dataset.BatchDatset(valid_records,reader_options)
@@ -319,7 +329,7 @@ print("\nStarting training/ validation...\n")
 if FLAGS.mode == 'train':
     for itr in xrange(FLAGS.max_iters):
         # read next batch
-        train_images, train_annotations = train_reader.next_batch(FLAGS.batch_size)
+        train_images, train_annotations = train_reader.next_image(FLAGS.batch_size)
         feed_dict = {images:train_images,annotations:train_annotations,dropout_prob:0.85}
         # training
         sess.run(train_op,feed_dict=feed_dict)
@@ -330,7 +340,7 @@ if FLAGS.mode == 'train':
             print("Step: %d, train_loss: %f"%(itr,train_loss))
         # log valid info
         if itr % 100 == 0:
-            valid_images, valid_annotations = valid_reader.get_random_batch(FLAGS.batch_size)
+            valid_images, valid_annotations = valid_reader.next_image(FLAGS.batch_size)
             feed_dict = {images:valid_images,annotations:valid_annotations,dropout_prob:1.0}
             valid_loss, valid_summary = sess.run([loss,summary_op],feed_dict=feed_dict)
             valid_writer.add_summary(valid_summary,itr)
@@ -343,7 +353,7 @@ if FLAGS.mode == 'train':
             saver.save(sess,snapshot_name)
 elif FLAGS.mode == 'valid':
     # quantitative results
-    valid_images,valid_annotations=valid_reader.get_records()
+    valid_images,valid_annotations=valid_reader.next_image(FLAGS.batch_size)
     feed_dict = {images:valid_images[:20],annotations:valid_annotations[:20],dropout_prob:1.0}
     valid_loss,valid_summary = sess.run([loss,summary_op],feed_dict=feed_dict)
     valid_writer.add_summary(valid_summary,FLAGS.max_iters)
@@ -351,7 +361,7 @@ elif FLAGS.mode == 'valid':
     print("Step: %d, valid_loss: %f"%(FLAGS.max_iters,valid_loss))
     print("==============================")
     # qualitative results
-    valid_images,valid_annotations=valid_reader.get_random_batch(FLAGS.batch_size)
+    valid_images,valid_annotations=valid_reader.next_image(FLAGS.batch_size)
     feed_dict = {images:valid_images,annotations:valid_annotations,dropout_prob:1.0}
     annotations_pred_results = sess.run(annotations_pred,feed_dict=feed_dict)
     
