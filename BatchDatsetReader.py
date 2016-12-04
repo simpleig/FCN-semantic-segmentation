@@ -58,8 +58,8 @@ class BatchDatset:
         self.different_annotations = []
         perm = np.arange(len(self.different_images_buffer))
         np.random.shuffle(perm)
-        self.different_images = [self.different_images_buffer[perm] for idx in perm]
-        self.different_annotations = [self.different_annotations_buffer[perm] for idx in perm]
+        self.different_images = [self.different_images_buffer[idx] for idx in perm]
+        self.different_annotations = [self.different_annotations_buffer[idx] for idx in perm]
 
     def next_image(self,batch_size=1):
         start = self.batch_offset
