@@ -63,7 +63,7 @@ class BatchDatset:
             self.batch_offset = batch_size
 
         end = self.batch_offset
-        return self.images[start:end], self.annotations[start:end]        
+        return self.different_images[start:end], self.different_annotations[start:end]        
 
     def _read_images(self):
         self.__channels = True
