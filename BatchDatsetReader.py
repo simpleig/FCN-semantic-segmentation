@@ -8,7 +8,9 @@ import scipy.misc as misc
 class BatchDatset:
     files = []
     images = []
+    different_images = []
     annotations = []
+    different_annotations = []
     image_options = {}
     batch_offset = 0
     epochs_completed = 0
@@ -30,7 +32,7 @@ class BatchDatset:
         self.files = records_list
         self.image_options = image_options
 
-        if self.image_options.get("different_size", False):
+        if self.image_options["different_size"] == False:
             self._read_images()
         else:
             self._read_different_images()
