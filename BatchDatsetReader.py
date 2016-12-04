@@ -71,10 +71,14 @@ class BatchDatset:
             self.epochs_completed += 1
             print("****************** Epochs completed: " + str(self.epochs_completed) + "******************")
             # Shuffle the data
-            perm = np.arange(len(self.different_images))
+            self.different_images_buffer = self.different_images
+            self.different_annotations_buffer = self.different_annotations
+            self.different_images = []
+            self.different_annotations = []
+            perm = np.arange(len(self.different_images_buffer))
             np.random.shuffle(perm)
-            self.different_images = self.different_images[perm]
-            self.different_annotations = self.different_annotations[perm]
+            self.different_images = [self.different_images_buffer[idx] for idx in perm]
+            self.different_annotations = [self.different_annotations_buffer[idx] for idx in perm]
             # Start next epoch
             start = 0
             self.batch_offset = batch_size
